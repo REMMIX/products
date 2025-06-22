@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Count the products</title> 
+
+<style>
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .add-item {
+        margin-bottom: 30px;
+    }
+
+    .input-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    input {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-small {
+        padding: 8px 12px;
+        font-size: 14px;
+        min-width: 40px;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #f44336, #da190b);
+        color: white;
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+        color: white;
+    }
+
+    .item-list {
+        margin-bottom: 30px;
+    }
+
+    .item {
+        background: white;
+        border: 1px solid #e1e5e9;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .item-details {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .item-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .quantity {
+        font-weight: 700;
+        font-size: 18px;
+        color: #667eea;
+        min-width: 30px;
+        text-align: center;
+    }
+
+    .total-section {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .total-label {
+        font-size: 16px;
+        margin-bottom: 10px;
+        opacity: 0.9;
+    }
+
+    .total-amount {
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #666;
+        padding: 40px 20px;
+        font-style: italic;
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            margin: 10px;
+            padding: 20px;
+        }
+        
+        .input-group {
+            flex-direction: column;
+        }
+        
+        .item-controls {
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>📦 โปรแกรมนับสินค้า</h1>
+
+    <div class="add-item">
+        <div class="input-group">
+            <input type="text" id="itemName" placeholder="ชื่อสินค้า" />
+            <input type="number" id="itemPrice" placeholder="ราคา" min="0" step="0.01" />
+        </div>
+        <button class="btn btn-primary" onclick="addItem()" style="width: 100%;">
+            ➕ เพิ่มสินค้า
+        </button>
+    </div>
+
+    <div class="item-list" id="itemList">
+        <div class="empty-state">
+            ยังไม่มีสินค้าในรายการ<br>
+            เริ่มต้นด้วยการเพิ่มสินค้าใหม่
+        </div>
+    </div>
+
+    <div class="total-section">
+        <div class="total-label">ยอดรวมทั้งหมด</div>
+        <div class="total-amount" id="totalAmount">฿0.00</div>
+    </div>
+</div>
+
+<script>
+    let items = [];
+    let nextId = 1;
+
+    function addItem() {
+        const nameInput = document.getElementById('itemName');
+        const priceInput = document.getElementById('itemPrice');
+        
+        const name = nameInput.value.trim();
+        const price = parseFloat(priceInput.value) || 0;
+        
+        if (!name) {
+            alert('กรุณาใส่ชื่อสินค้า');
+            return;
+        }
+        
+        const newItem = {
+            id: nextId++,
+            name: name,
+            price: price,
+            quantity: 1
+        };
+        
+        items.push(newItem);
+        nameInput.value = '';
+        priceInput.value = '';
+        
+        renderItems();
+        updateTotal();
+    }
+
+    function increaseQuantity(id) {
+        const item = items.find(item => item.id === id);
+        if (item) {
+            item.quantity++;
+            renderItems();
+            updateTotal();
+        }
+    }
+
+    function decreaseQuantity(id) {
+        const item = items.find(item => item.id === id);
+        if (item && item.quantity > 0) {
+            item.quantity--;
+            renderItems();
+            updateTotal();
+        }
+    }
+
+    function removeItem(id) {
+        if (confirm('ต้องการลบสินค้านี้หรือไม่?')) {
+            items = items.filter(item => item.id !== id);
+            renderItems();
+            updateTotal();
+        }
+    }
+
+    function renderItems() {
+        const itemList = document.getElementById('itemList');
+        
+        if (items.length === 0) {
+            itemList.innerHTML = `
+                <div class="empty-state">
+                    ยังไม่มีสินค้าในรายการ<br>
+                    เริ่มต้นด้วยการเพิ่มสินค้าใหม่
+                </div>
+            `;
+            return;
+        }
+        
+        itemList.innerHTML = items.map(item => `
+            <div class="item">
+                <div class="item-info">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-details">
+                        ราคา: ฿${item.price.toFixed(2)} | 
+                        รวม: ฿${(item.price * item.quantity).toFixed(2)}
+                    </div>
+                </div>
+                <div class="item-controls">
+                    <button class="btn btn-danger btn-small" onclick="decreaseQuantity(${item.id})">-</button>
+                    <span class="quantity">${item.quantity}</span>
+                    <button class="btn btn-success btn-small" onclick="increaseQuantity(${item.id})">+</button>
+                    <button class="btn btn-warning btn-small" onclick="removeItem(${item.id})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateTotal() {
+        const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        document.getElementById('totalAmount').textContent = `฿${total.toFixed(2)}`;
+    }
+
+    // เพิ่ม event listener สำหรับ Enter key
+    document.getElementById('itemName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('itemPrice').focus();
+        }
+    });
+
+    document.getElementById('itemPrice').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addItem();
+        }
+    });
+
+    // Initial render
+    renderItems();
+    updateTotal();
+</script>
+
+</body>
+</html>
